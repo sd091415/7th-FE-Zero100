@@ -24,9 +24,27 @@ export default function TodoTitle ({ task }){
     if (isEditing) {
         return(
             <li className="border border-gray-200 rounded-md p-4 mb-4 bg-white list-none">
-                <Input value={editTitle} onChange={setEditTitle}
-                className="w-full border border-gray-300 rounded-md p-2 mb-3 focus:outline-none focus:border-black"/>
-                <Button onClick={handleSave} className="w-full bg-black text-white py-2 rounded-md font-medium">Save Edit</Button>
+                <div className="mb-4">
+                    <Text tagName="p" className="text-sm text-gray-600 mb-2">
+                        New name for <span className="font-bold text-black">{task.title}</span>
+                    </Text>
+                    <Input 
+                        value={editTitle} 
+                        onChange={setEditTitle}
+                        className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-black"/>
+                </div>
+                <div className="flex gap-2">
+                    <Button 
+                        onClick={() => setIsEditing(false)} 
+                        className="flex-1 bg-white border border-gray-300 text-gray-700 py-2 rounded-md font-medium">
+                        Cancel
+                    </Button>
+                    <Button 
+                        onClick={handleSave} 
+                        className="flex-1 bg-black text-white py-2 rounded-md font-medium">
+                        Save
+                    </Button>
+                </div>
             </li>
         )
     }

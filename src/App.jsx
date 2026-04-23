@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useMemo } from "react";
 import { Routes, Route, NavLink } from "react-router";
 import Text from "./Components/Text.jsx";
 import Button from "./Components/Button.jsx";
@@ -7,23 +7,20 @@ import TodoAdd from "./Features/TodoAdd.jsx";
 import { useTodo } from "./Contexts/TodoContexts.jsx";
 
 function App() {
-  // Context.jsx에서 필요한 데이터만 가져오고 이외는 전부 Context.jsx에서 관리
   const { tasks, remainingTasks } = useTodo();
   
-  // 필러링된 데이터 정리
   const allTasks = tasks;
-  const activeTasks = tasks.filter(task => !task.done);
-  const completedTasks = tasks.filter(task => task.done);
+  // useMemo 적용: tasks 배열이 바뀔 때만 필터링 연산 수행
+  const activeTasks = useMemo(() => tasks.filter(task => !task.done), [tasks]);
+  const completedTasks = useMemo(() => tasks.filter(task => task.done), [tasks]);
 
   return(
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-lg rounded-xl p-6">
         <Text tagName="h1" className="text-3xl font-bold text-center mb-2">TodoMatic</Text>
         
-        {/* 할 일 추가 */}
         <TodoAdd />
 
-        {/* 필터링 네비게이션 버튼 */}
         <div className="flex gap-2 mb-6">
           <NavLink to="/all" className={({ isActive }) => 
               `flex-1 text-center py-3 rounded-md font-medium transition-colors ${
@@ -52,22 +49,10 @@ function App() {
           {remainingTasks} tasks remaining
         </Text>
       
-        {/* URL 경로에 딸느 할 일 목록 렌더링 */}
         <Routes>
-          <Route path="/all" element={
-              <TodoList tasks={allTasks} />
-            } 
-          />
-
-          <Route path="/" element={
-              <TodoList tasks={activeTasks} />
-            } 
-          />
-          
-          <Route path="/completed" element={
-              <TodoList tasks={completedTasks} />
-            } 
-          />
+          <Route path="/all" element={<TodoList tasks={allTasks} />} />
+          <Route path="/" element={<TodoList tasks={activeTasks} />} />
+          <Route path="/completed" element={<TodoList tasks={completedTasks} />} />
         </Routes>
       </div>
     </div>

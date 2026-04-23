@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useState, useEffect, useContext, useMemo, useCallback } from "react";
 
 const TodoContext = createContext();
 
@@ -22,33 +22,36 @@ export function TodoProvider({ children }) {
   }, [tasks]); 
 
   // 할 일 추가
-  const addTask = (input) => {
+  const addTask = useCallback((input) => {
     const newTask = { id: Date.now(), title: input, done: false};
-    setTasks([...tasks, newTask]);
-  };
+    setTasks(prevTasks => [...prevTasks, newTask]);
+  }, []);
 
   // 할 일 상태 토글 변경
-  const toggleTask = (id) => {
-    setTasks(tasks.map(task => (task.id === id) ? { ...task, done: !task.done } : task));
-  };
+  const toggleTask = useCallback((id) => {
+    setTasks(prevTasks => prevTasks.map(task => (task.id === id) ? { ...task, done: !task.done } : task));
+  }, []);
 
   // 할 일 수정
-  const editTask = (id, newTitle) => {
-    setTasks(tasks.map(task => task.id === id ? { ...task, title: newTitle} : task));
-  }
+  const editTask = useCallback((id, newTitle) => {
+    setTasks(prevTasks => prevTasks.map(task => task.id === id ? { ...task, title: newTitle} : task));
+  }, []);
 
   // 할 일 삭제
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id));
-  };
+  const deleteTask = useCallback((id) => {
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+  }, []);
 
   // 남은 할 일 개수
   const remainingTasks = tasks.filter(task => !task.done).length;
 
+  // useMemo를 사용해 최적화 
+  const contextValue = useMemo(() => ({ 
+      tasks, addTask, toggleTask, editTask, deleteTask, remainingTasks 
+  }), [tasks, addTask, toggleTask, editTask, deleteTask, remainingTasks]);
+
   return (
-    <TodoContext.Provider value={{ 
-        tasks, addTask, toggleTask, editTask, deleteTask, remainingTasks 
-    }}>
+    <TodoContext.Provider value={contextValue}>
       {children}
     </TodoContext.Provider>
   );
