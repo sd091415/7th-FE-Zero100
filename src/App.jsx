@@ -1,60 +1,48 @@
-import { useState, useRef } from "react";
-import { Routes, Route, Link } from "react-router";
+import { useMemo } from "react";
+import { Routes, Route, NavLink } from "react-router";
 import Text from "./Components/Text.jsx";
 import Button from "./Components/Button.jsx";
 import TodoList from "./Features/TodoList.jsx";
 import TodoAdd from "./Features/TodoAdd.jsx";
+import { useTodo } from "./Contexts/TodoContexts.jsx";
 
 function App() {
-  const [tasks, setTasks] = useState ([
-    { id: 0, title: "Eat", done: true},
-    { id: 1, title: "Sleep" , done: false},
-    { id: 2, title: "Repeat", done: false}
-  ]);
+  const { tasks, remainingTasks } = useTodo();
   
-  const nextId = useRef(3);
- 
-  const addTask = (input) => {
-    const newTask = { id: nextId.current, title: input, done: false};
-    setTasks([...tasks, newTask]);
-    nextId.current += 1;
-  };
-
-  const toggleTask = (id) => {
-    setTasks(tasks.map(task => (task.id === id) ? { ...task, done: !task.done } : task));
-  };
-
-  const editTask = (id, newTitle) => {
-    setTasks(tasks.map(task => task.id === id ? { ...task, title: newTitle} : task));
-  }
-
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id));
-  };
-
-  const remainingTasks = tasks.filter(task => !task.done).length;
-
   const allTasks = tasks;
-  const activeTasks = tasks.filter(task => !task.done);
-  const completedTasks = tasks.filter(task => task.done);
+  // useMemo 적용: tasks 배열이 바뀔 때만 필터링 연산 수행
+  const activeTasks = useMemo(() => tasks.filter(task => !task.done), [tasks]);
+  const completedTasks = useMemo(() => tasks.filter(task => task.done), [tasks]);
 
   return(
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-lg rounded-xl p-6">
         <Text tagName="h1" className="text-3xl font-bold text-center mb-2">TodoMatic</Text>
         
-        <TodoAdd onAddTask={addTask}></TodoAdd>
+        <TodoAdd />
 
         <div className="flex gap-2 mb-6">
-          <Link to="/all" className="flex-1 bg-gray-500 text-white text-center py-3 rounded-md">
+          <NavLink to="/all" className={({ isActive }) => 
+              `flex-1 text-center py-3 rounded-md font-medium transition-colors ${
+                isActive ? "bg-black text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`
+            }>
             <Button>All</Button>
-          </Link>
-          <Link to="/" className="flex-1 bg-gray-500 text-white text-center py-3 rounded-md">
+          </NavLink>
+          <NavLink to="/" className={({ isActive }) => 
+              `flex-1 text-center py-3 rounded-md font-medium transition-colors ${
+                isActive ? "bg-black text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`
+            }>
             <Button>Active</Button>
-          </Link>
-          <Link to="/completed" className="flex-1 bg-gray-500 text-white text-center py-3 rounded-md">
+          </NavLink>
+          <NavLink to="/completed" className={({ isActive }) => 
+              `flex-1 text-center py-3 rounded-md font-medium transition-colors ${
+                isActive ? "bg-black text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`
+            }>
             <Button>Completed</Button>
-          </Link>
+          </NavLink>
         </div>
 
         <Text tagName="h3" className="text-lg font-bold text-gray-800 mb-4">
@@ -62,35 +50,9 @@ function App() {
         </Text>
       
         <Routes>
-          <Route path="/all" element={
-              <TodoList 
-                tasks={allTasks} 
-                onToggle={toggleTask}
-                onDelete={deleteTask}
-                onEdit={editTask}
-              />
-            } 
-          />
-
-          <Route path="/" element={
-              <TodoList 
-                tasks={activeTasks} 
-                onToggle={toggleTask}
-                onDelete={deleteTask}
-                onEdit={editTask}
-              />
-            } 
-          />
-          
-          <Route path="/completed" element={
-              <TodoList 
-                tasks={completedTasks} 
-                onToggle={toggleTask}
-                onDelete={deleteTask}
-                onEdit={editTask}
-              />
-            } 
-          />
+          <Route path="/all" element={<TodoList tasks={allTasks} />} />
+          <Route path="/" element={<TodoList tasks={activeTasks} />} />
+          <Route path="/completed" element={<TodoList tasks={completedTasks} />} />
         </Routes>
       </div>
     </div>
