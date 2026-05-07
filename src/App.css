@@ -1,0 +1,12 @@
+@import "tailwindcss";
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.main-title {
+  width: 100%;
+  text-align: left;
+}
