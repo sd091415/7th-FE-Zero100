@@ -2,13 +2,17 @@ import { useState } from "react";
 import Text from "../Components/Text.jsx";
 import Input from "../Components/Input.jsx";
 import Button from "../Components/Button.jsx";
+import { useTodo } from "../Contexts/TodoContexts.jsx";
 
-export default function TodoAdd({ onAddTask }){
+export default function TodoAdd(){
+    // 입력창의 텍스트 상태 관리
     const [input, setInput] = useState ("");
+    const {addTask} = useTodo();
 
+    // Add 버튼 클릭시 발생
     const handleClick = () => {
-    if (!input.trim()) return;
-    onAddTask(input);
+    if (!input.trim()) return; // 공백값 입력 방지
+    addTask(input);          
     setInput("");
   };
 
