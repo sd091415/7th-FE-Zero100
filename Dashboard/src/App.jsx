@@ -19,8 +19,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
 
         <Route element={<AdminLayout />}>
-          {/* 기본 주소 대신 dashboardhome 사용 */}
-          <Route path="/" element={<Navigate to="/dashboardhome" replace />} />
+          {/* 로그인 페이지부터 시작 */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/dashboardhome" element={<DashboardHome />} />
           
           <Route path="/inquiry" element={<InquiryList />} />
