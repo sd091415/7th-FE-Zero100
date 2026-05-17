@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import TextInput from '../components/TextInput';
@@ -6,8 +6,14 @@ import TextInput from '../components/TextInput';
 const InquiryWrite = () => {
   const navigate = useNavigate();
 
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    // TODO: 나중에 이 부분에서 API 호출 
+    console.log('등록할 데이터:', { title, content });
+    
     alert('문의가 등록되었습니다.');
     navigate('/inquiry'); // 등록 후 목록으로 이동
   };
@@ -23,6 +29,8 @@ const InquiryWrite = () => {
           <TextInput 
             label="제목" 
             placeholder="제목을 입력하세요" 
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
 
           <TextInput 
@@ -30,6 +38,8 @@ const InquiryWrite = () => {
             placeholder="내용을 입력하세요" 
             isTextArea={true} 
             rows={12} 
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
           />
 
           <div className="flex justify-end gap-3 mt-6">
@@ -49,7 +59,6 @@ const InquiryWrite = () => {
               </Button>
             </div>
           </div>
-
         </form>
       </div>
     </div>

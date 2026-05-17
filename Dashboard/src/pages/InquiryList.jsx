@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Button from '../components/Button';
 
 const InquiryList = () => {
@@ -45,12 +45,18 @@ const InquiryList = () => {
             {inquiries.map((inquiry) => (
               <tr 
                 key={inquiry.id} 
-                // 행 전체를 클릭하면 해당 id의 상세 페이지로 이동
-                onClick={() => navigate(`/inquiry/${inquiry.id}`)}
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer text-sm"
               >
                 <td className="py-4 px-6 text-center text-gray-500">{inquiry.id}</td>
-                <td className="py-4 px-6 text-gray-900 font-medium truncate">{inquiry.title}</td>
+                <td className="py-4 px-6 truncate">
+                  {/* 제목에 Link 와 스타일 적용 */}
+                  <Link 
+                    to={`/inquiry/${inquiry.id}`}
+                    className="text-gray-900 font-medium hover:underline hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded px-1 py-0.5 outline-none"
+                  >
+                    {inquiry.title}
+                  </Link>
+                </td>
                 <td className="py-4 px-6 text-center text-gray-600">{inquiry.author}</td>
                 <td className="py-4 px-6 text-center text-gray-500">{inquiry.date}</td>
                 <td className="py-4 px-6 text-center">
