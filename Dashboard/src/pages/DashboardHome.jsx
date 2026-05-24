@@ -31,11 +31,11 @@ const DashboardHome = () => {
             {/* 나중에 버튼식 연결 */}
             <div className="flex justify-between items-center border-b border-gray-100 pb-4">
               <span className="text-gray-500 font-medium">전체 문의</span> 
-              <span className="font-bold text-black-600 text-base">24건</span>
+              <span className="font-bold text-black text-base">24건</span>
             </div>
             <div className="flex justify-between items-center pb-2">
               <span className="text-gray-500 font-medium">내가 쓴 문의</span>
-              <span className="font-bold text-black-600 text-base">8건</span>
+              <span className="font-bold text-black text-base">8건</span>
             </div>
           </div>
         </div>
