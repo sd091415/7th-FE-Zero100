@@ -6,7 +6,12 @@ export function TodoProvider({ children }) {
   const [tasks, setTasks] = useState(() => {
     const savedTasks = localStorage.getItem("todoTasks");
     if (savedTasks) {
-      return JSON.parse(savedTasks); // 저장된 글자를 다시 배열로
+      try {
+        return JSON.parse(savedTasks); // 정상적일 경우 배열로 변환하여 반환
+      } catch (error) {
+        // 실패시 에러 무시하고 기본값으로 변경
+        console.error("localStorage 데이터를 불러오는 중 오류가 발생했습니다. 기본값으로 초기화합니다.", error);
+      }
     }
     // 기본값
     return [

@@ -27,21 +27,21 @@ function App() {
                 isActive ? "bg-black text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`
             }>
-            <Button>All</Button>
+            All
           </NavLink>
           <NavLink to="/" className={({ isActive }) => 
               `flex-1 text-center py-3 rounded-md font-medium transition-colors ${
                 isActive ? "bg-black text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`
             }>
-            <Button>Active</Button>
+            Active
           </NavLink>
           <NavLink to="/completed" className={({ isActive }) => 
               `flex-1 text-center py-3 rounded-md font-medium transition-colors ${
                 isActive ? "bg-black text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`
             }>
-            <Button>Completed</Button>
+            Completed
           </NavLink>
         </div>
 
