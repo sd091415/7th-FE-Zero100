@@ -5,6 +5,7 @@ import AdminLayout from './layouts/AdminLayout';
 
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import KakaoRedirect from './pages/KakaoRedirect';
 import DashboardHome from './pages/DashboardHome';
 import InquiryList from './pages/InquiryList';
 import InquiryWrite from './pages/InquiryWrite';
@@ -17,6 +18,8 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
+        <Route path="/auth/kakao/callback" element={<KakaoRedirect />} />
 
         <Route element={<AdminLayout />}>
           {/* 로그인 페이지부터 시작 */}

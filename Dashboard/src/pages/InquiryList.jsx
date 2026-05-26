@@ -1,16 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect} from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Button from '../components/Button';
+import axios from 'axios';
 
 const InquiryList = () => {
   const navigate = useNavigate();
+  const [inquiries, setInquiries] = useState([]);
 
-  // 나중에 교체할 임시 데이터입니다.
-  const inquiries = [
-    { id: 3, title: '회원가입 문의', author: '홍준표', date: '2026.05.07', status: '답변대기' },
-    { id: 2, title: '대시보드 기능 개선 요청', author: '홍준표', date: '2026.05.05', status: '답변완료' },
-    { id: 1, title: 'API 연동 방법 문의.', author: '홍준표', date: '2026.05.05', status: '답변완료' },
-  ];
+  // 문의 목록을 가져오는 함수
+  const fetchInquiries = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+
+      if (!token) {
+        alert('로그인이 필요한 서비스입니다.');
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.get(
+        'https://leetszero100-fe.kro.kr/api/inquiries',
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      if (response.status === 200) {
+        setInquiries(response.data.data);
+      }
+    } catch (error) {
+      if (error.response) {
+        const status = error.response.status; 
+        const errorMessage = error.response.data.error; 
+
+        if (status === 401) {
+          alert(`인증 실패: ${errorMessage}`);
+          navigate('/login');
+        } else {
+          alert('알 수 없는 문제가 발생했습니다.');
+        }
+      } else {
+        console.error('서버 연결 실패:', error);
+        alert('서버와 연결할 수 없습니다. 백엔드 상태를 확인해주세요.');
+      }
+    }
+  };
+
+  // 화면이 처음 켜질 때 실행
+  useEffect(() => {
+    fetchInquiries();
+  }, []);
 
   return (
     <div className="w-full">
@@ -36,20 +75,18 @@ const InquiryList = () => {
               <th className="py-4 px-6 font-medium">제목</th>
               <th className="py-4 px-6 font-medium text-center w-28">작성자</th>
               <th className="py-4 px-6 font-medium text-center w-32">작성일</th>
-              <th className="py-4 px-6 font-medium text-center w-28">상태</th>
             </tr>
           </thead>
           
           {/* 테이블 본문 */}
           <tbody>
-            {inquiries.map((inquiry) => (
+            {inquiries.map((inquiry, index) => (
               <tr 
                 key={inquiry.id} 
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer text-sm"
               >
-                <td className="py-4 px-6 text-center text-gray-500">{inquiry.id}</td>
+                <td className="py-4 px-6 text-center text-gray-500">{index+1}</td>
                 <td className="py-4 px-6 truncate">
-                  {/* 제목에 Link 와 스타일 적용 */}
                   <Link 
                     to={`/inquiry/${inquiry.id}`}
                     className="text-gray-900 font-medium hover:underline hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded px-1 py-0.5 outline-none"
@@ -57,19 +94,8 @@ const InquiryList = () => {
                     {inquiry.title}
                   </Link>
                 </td>
-                <td className="py-4 px-6 text-center text-gray-600">{inquiry.author}</td>
-                <td className="py-4 px-6 text-center text-gray-500">{inquiry.date}</td>
-                <td className="py-4 px-6 text-center">
-                  <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${
-                    // 답변대기 및 답변완료 구분용
-                    inquiry.status === '답변대기' 
-                      ? 'bg-red-50 text-red-500' 
-                      : 'bg-blue-50 text-blue-600' 
-                  }`}>
-                    {inquiry.status}
-                  </span>
-                  
-                </td>
+                <td className="py-4 px-6 text-center text-gray-600">{inquiry.name}</td>
+                <td className="py-4 px-6 text-center text-gray-500">{inquiry.created_at}</td>
               </tr>
             ))}
           </tbody>

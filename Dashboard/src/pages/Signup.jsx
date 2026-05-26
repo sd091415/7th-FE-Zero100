@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import TextInput from '../components/TextInput';
+import axios from 'axios';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const Signup = () => {
   // 이메일 형식 확인
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   // 8자 이상, 영문/숫자/특수문자 포함 확인
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/-]).{8,}$/;
+  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}[\]|\\:;"'<>,.?/-]).{8,}$/;
 
   // 오류 문자
   const emailError = email && !emailRegex.test(email) ? '올바른 이메일 형식을 입력하세요' : '';  
@@ -22,7 +23,7 @@ const Signup = () => {
   const confirmError = passwordConfirm && password !== passwordConfirm ? '비밀번호가 일치하지 않습니다' : '';
 
   // 폼 제출 시 실행되는 함수
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault(); 
 
     // 빈 칸이나 에러의 경우 제출 막기
@@ -34,17 +35,49 @@ const Signup = () => {
       alert('입력한 정보를 다시 확인해주세요.');
       return;
     }
-    // TODO:
-    console.log('회원가입 시도');
-    alert('회원가입이 완료되었습니다.'); 
-    
-    // 회원가입 완료 후 로그인 페이지로 이동
-    navigate('/login'); 
+  
+    // API 서버로 데이터 전송
+    try {
+      const response = await axios.post(
+        'https://leetszero100-fe.kro.kr/api/auth/signup',
+        {
+          email: email,       
+          password: password, 
+          // 임시 값 적용
+          name: "홍길동",      
+          kakaoId: "123456789" 
+        }
+      );
+
+      if (response.status === 201) {
+        alert('회원가입이 완료되었습니다.'); 
+        navigate('/login'); 
+      }
+
+    } catch (error) {
+      if (error.response) {
+        const status = error.response.status;
+        const errorMessage = error.response.data.error; 
+
+        // errorMessage가 여러 종류의 오류 처리
+        if (status === 400) {
+          alert(`입력값을 다시 확인해주세요: ${errorMessage}`);
+        } else if (status === 409) {
+          alert(`가입 실패: ${errorMessage}`);
+        } else {
+          alert('회원가입 처리 중 문제가 발생했습니다.');
+        }
+      } else {
+          // 서버 연결 실패시
+          console.error('서버 연결 실패:', error);
+          alert('서버와 연결할 수 없습니다. 백엔드 상태를 확인해주세요.');
+        }
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
-      <div className="bg-white p-10 rounded-xl shadow-sm border border-gray-200 w-full max-w-[400px]">
+      <div className="bg-white p-10 rounded-xl shadow-sm border border-gray-200 w-full max-w-100">
         <h1 className="text-2xl font-bold text-center mb-8">회원가입</h1>
         
         <form onSubmit={handleSignup} className="flex flex-col gap-4">

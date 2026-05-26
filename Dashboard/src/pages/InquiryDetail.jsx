@@ -1,20 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../components/Button';
+import axios from 'axios';
 
 const InquiryDetail = () => {
   const navigate = useNavigate();
   // useParams를 통해 id 받아오기
   const { id } = useParams(); 
 
-  const inquiry = {
-    id: id,
-    title: '로그인 비밀번호를 까먹었어요',
-    author: '홍준표',
-    date: '2026.05.07',
-    status: '답변대기',
-    content: '11',
-    answer: null // 만약 답변이 있다면 answer에 텍스트
+  const [inquiry, setInquiry] = useState(' ');
+
+  const handleInquiryDelete = async () => {
+    if (!window.confirm('정말 이 문의를 삭제하시겠습니까?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('accessToken');
+
+      if (!token) {
+        alert('로그인이 필요한 서비스입니다.');
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.delete(
+        `https://leetszero100-fe.kro.kr/api/inquiries/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        alert('문의가 정상적으로 삭제되었습니다.');
+        navigate('/inquiry');
+      }
+
+    } catch (error) {
+      if (error.response) {
+        const status = error.response.status;
+        const errorMessage = error.response.data.error;
+
+        if (status === 401) {
+          alert(`인증 실패: ${errorMessage}`);
+          navigate('/login');
+        } else if (status === 403) {
+        alert(`본인 확인: ${errorMessage}`); 
+        } else if (status === 404) {
+        alert(`사용자 오류: ${errorMessage}`); 
+        } else {
+          alert(`알 수 없는 문제가 발생했습니다.'}`);
+        }
+      } else {
+        console.error('서버 연결 실패:', error);
+        alert('서버와 연결할 수 없습니다. 백엔드 상태를 확인해주세요.');
+      }
+    }
   };
 
   return (
@@ -41,7 +84,7 @@ const InquiryDetail = () => {
           </div>
         </div>
 
-        <div className="p-8 min-h-[200px] text-gray-800 leading-relaxed whitespace-pre-wrap">
+        <div className="p-8 min-h-50 text-gray-800 leading-relaxed whitespace-pre-wrap">
           {inquiry.content}
         </div>
 
@@ -68,10 +111,7 @@ const InquiryDetail = () => {
         
         <div className="flex gap-3">
           <div className="w-24">
-            <Button variant="danger" onClick={() => { 
-              alert('삭제되었습니다.'); 
-              navigate('/inquiry'); 
-            }}>
+            <Button variant="danger" className="w-24 bg-red-500 hover:bg-red-600 text-white" onClick={handleInquiryDelete}>
               삭제
             </Button>
           </div>
