@@ -23,7 +23,7 @@ const InquiryList = () => {
         {
           headers: { Authorization: `Bearer ${token}` }
         }
-      );
+      );  
 
       if (response.status === 200) {
         setInquiries(response.data.data);

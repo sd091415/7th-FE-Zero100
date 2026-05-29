@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Button from '../components/Button';
 import TextInput from '../components/TextInput';
 import axios from 'axios';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // 현재 주소와 넘어온 상태를 확인
+  // 이전 페이지에서 state로 kakaoId를 넘겨줬다면 가져오고, 아니면 undefined
+  const kakaoId = location.state?.kakaoId;
 
   // 입력창의 값들을 저장할 상태
   const [email, setEmail] = useState('');
@@ -38,15 +41,23 @@ const Signup = () => {
   
     // API 서버로 데이터 전송
     try {
+      // 일반 가입 시 보낼 기본 데이터 세팅
+      const requestData = {
+        email: email,       
+        password: password, 
+        name: "tester", // 이름 입력이 없으므로 고정값 사용
+      };
+
+      // 카카오 연동 가입이라서 kakaoId가 존재할시 reauestData에 내용 추가
+      if (kakaoId) {
+        requestData.kakaoId = kakaoId;
+      } else{
+        requestData.kakaoId = "";
+      }
+      
       const response = await axios.post(
         'https://leetszero100-fe.kro.kr/api/auth/signup',
-        {
-          email: email,       
-          password: password, 
-          // 임시 값 적용
-          name: "홍길동",      
-          kakaoId: "123456789" 
-        }
+        requestData
       );
 
       if (response.status === 201) {

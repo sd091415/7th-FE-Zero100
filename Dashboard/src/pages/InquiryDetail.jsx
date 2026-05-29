@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../components/Button';
 import axios from 'axios';
@@ -8,7 +8,31 @@ const InquiryDetail = () => {
   // useParams를 통해 id 받아오기
   const { id } = useParams(); 
 
-  const [inquiry, setInquiry] = useState(' ');
+  const [inquiry, setInquiry] = useState(null);
+
+  useEffect(() => {
+    const fetchInquiryDetail = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+
+        const response = await axios.get(
+          `https://leetszero100-fe.kro.kr/api/inquiries/${id}`,
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+          }
+        );
+
+        setInquiry(response.data); 
+
+      } catch (error) {
+        console.error('상세 정보 불러오기 실패:', error);
+        alert('문의 상세 내역을 불러오는데 실패했습니다.');
+        navigate('/inquiry'); // 에러 시 목록으로 이동
+      }
+    };
+
+    fetchInquiryDetail(); // 함수 실행
+  }, [id, navigate]); // id나 navigate가 바뀔 때만 재실행
 
   const handleInquiryDelete = async () => {
     if (!window.confirm('정말 이 문의를 삭제하시겠습니까?')) {
@@ -59,6 +83,14 @@ const InquiryDetail = () => {
       }
     }
   };
+
+  if (!inquiry) {
+    return (
+      <div className="w-full max-w-3xl flex justify-center items-center py-20">
+        <p className="text-gray-500">데이터를 불러오는 중입니다...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-3xl">

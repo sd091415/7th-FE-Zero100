@@ -74,7 +74,7 @@ const MyPage = () => {
       }
 
       const response = await axios.patch(
-        'http://leetszero100-fe.kro.kr/api/auth/password',
+        'https://leetszero100-fe.kro.kr/api/auth/me/password',
         {
           currentPassword: currentPassword,
           newPassword: newPassword

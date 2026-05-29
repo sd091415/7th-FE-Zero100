@@ -28,6 +28,7 @@ const TextInput = ({
       {/* 본문인지 아닌지에 따라 받는 태그 구분 */}
       {isTextArea ? (
         <textarea
+          id={inputId}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
@@ -36,6 +37,7 @@ const TextInput = ({
         />
       ) : (
         <input
+          id={inputId}
           type={type}
           placeholder={placeholder}
           value={value}

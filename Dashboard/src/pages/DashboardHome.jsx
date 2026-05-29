@@ -6,6 +6,10 @@ const DashboardHome = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null); // 내 정보 저장용
 
+  // 문의 개수를 담을 State
+  const [totalCount, setTotalCount] = useState(0); 
+  const [myCount, setMyCount] = useState(0);
+
   // 서버에 내 정보 요청
   const fetchMyInfo = async () => {
     try {
@@ -25,9 +29,26 @@ const DashboardHome = () => {
           }
         }
       );
+      const inquiryResponse = await axios.get(
+        'https://leetszero100-fe.kro.kr/api/inquiries',
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
 
       if (response.status === 200) {
-        setUserInfo(response.data.data);
+        const myInfo = response.data.data; 
+        setUserInfo(myInfo);
+
+        // 전체 문의 개수
+        const allInquiries = inquiryResponse.data.data;
+        setTotalCount(allInquiries.lenght); 
+
+        // 내 문의 개수
+        const myInquiries = allInquiries.filter(
+          (inquiry) => inquiry.name === myInfo.name
+        );
+        setMyCount(myInquiries.length);
       }
     } catch (error) {
       if (error.response) {
@@ -85,11 +106,11 @@ const DashboardHome = () => {
             {/* 나중에 버튼식 연결 */}
             <div className="flex justify-between items-center border-b border-gray-100 pb-4">
               <span className="text-gray-500 font-medium">전체 문의</span> 
-              <span className="font-bold text-black text-base">24건</span>
+              <span className="font-bold text-black text-base">{totalCount}건</span>
             </div>
             <div className="flex justify-between items-center pb-2">
               <span className="text-gray-500 font-medium">내가 쓴 문의</span>
-              <span className="font-bold text-black text-base">8건</span>
+              <span className="font-bold text-black text-base">{myCount}건</span>
             </div>
           </div>
         </div>
