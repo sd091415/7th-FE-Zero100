@@ -42,7 +42,7 @@ const DashboardHome = () => {
 
         // 전체 문의 개수
         const allInquiries = inquiryResponse.data.data;
-        setTotalCount(allInquiries.lenght); 
+        setTotalCount(allInquiries.length); 
 
         // 내 문의 개수
         const myInquiries = allInquiries.filter(
